@@ -3,6 +3,6 @@
     <item
         android:width="66dp"
         android:height="66dp"
-        android:drawable="@drawable/img_app_icon_1787809106071"
+        android:drawable="@drawable/img_real_tetris_device_icon_1787842532092"
         android:gravity="center" />
 </layer-list>
