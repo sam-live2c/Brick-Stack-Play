@@ -31,6 +31,7 @@ class TetrisEngine(
     private var clearingLines = emptyList<Int>()
     private var lastClearedCount = 0
     private var lastActionMessage: String? = null
+    private var hasFailedCurrentLevel = false
 
     fun setHighScore(savedHighScore: Int) {
         highScore = savedHighScore
@@ -40,11 +41,16 @@ class TetrisEngine(
     fun startGame(
         startLevel: Int = 1,
         gameMode: GameMode = GameMode.MARATHON,
-        speedMultiplier: Float = 1.0f
+        speedMultiplier: Float = 1.0f,
+        resetFailureFlag: Boolean = false
     ) {
         clearGrid()
         bag.clear()
-        this.startLevel = startLevel.coerceIn(1, 1000)
+        val newStartLevel = startLevel.coerceIn(1, 1000)
+        if (newStartLevel != this.startLevel || resetFailureFlag) {
+            hasFailedCurrentLevel = false
+        }
+        this.startLevel = newStartLevel
         this.gameMode = gameMode
         this.speedMultiplier = speedMultiplier
         level = this.startLevel
@@ -81,8 +87,9 @@ class TetrisEngine(
     }
 
     fun triggerTimesUp() {
+        hasFailedCurrentLevel = true
         calculateFinalScore()
-        state = state.copy(status = GameStatus.TIMES_UP)
+        state = state.copy(status = GameStatus.TIMES_UP, hasFailedCurrentLevel = true)
         onSoundEvent(SoundEffectEvent.LEVEL_UP)
         updateState()
     }
@@ -105,9 +112,10 @@ class TetrisEngine(
     fun resetGame(
         startLevel: Int = 1,
         gameMode: GameMode = GameMode.MARATHON,
-        speedMultiplier: Float = 1.0f
+        speedMultiplier: Float = 1.0f,
+        resetFailureFlag: Boolean = false
     ) {
-        startGame(startLevel, gameMode, speedMultiplier)
+        startGame(startLevel, gameMode, speedMultiplier, resetFailureFlag)
         onSoundEvent(SoundEffectEvent.BUTTON_CLICK)
     }
 
@@ -241,7 +249,8 @@ class TetrisEngine(
             holdPieceType = currentType
             currentPiece = Tetromino.create(temp, startX = 3, startY = 0)
             if (!isValidPosition(currentPiece!!)) {
-                state = state.copy(status = GameStatus.GAME_OVER)
+                hasFailedCurrentLevel = true
+                state = state.copy(status = GameStatus.GAME_OVER, hasFailedCurrentLevel = true)
                 onSoundEvent(SoundEffectEvent.GAME_OVER)
                 onHapticEvent(HapticEffectEvent.GAME_OVER)
                 updateState()
@@ -260,7 +269,8 @@ class TetrisEngine(
         canHold = true
 
         if (!isValidPosition(currentPiece!!)) {
-            state = state.copy(status = GameStatus.GAME_OVER)
+            hasFailedCurrentLevel = true
+            state = state.copy(status = GameStatus.GAME_OVER, hasFailedCurrentLevel = true)
             onSoundEvent(SoundEffectEvent.GAME_OVER)
             onHapticEvent(HapticEffectEvent.GAME_OVER)
             updateState()
@@ -376,15 +386,17 @@ class TetrisEngine(
 
         // Check Game Mode Victory Conditions
         if (gameMode == GameMode.SPRINT_40 && linesCleared >= 40) {
+            hasFailedCurrentLevel = false
             calculateFinalScore()
-            state = state.copy(status = GameStatus.VICTORY)
+            state = state.copy(status = GameStatus.VICTORY, hasFailedCurrentLevel = false)
             onSoundEvent(SoundEffectEvent.TETRIS_CLEAR)
             onHapticEvent(HapticEffectEvent.VICTORY)
             updateState()
             return
         } else if (gameMode == GameMode.LEVEL_STAGE && linesCleared >= startLevel * 15) {
+            hasFailedCurrentLevel = false
             calculateFinalScore()
-            state = state.copy(status = GameStatus.VICTORY)
+            state = state.copy(status = GameStatus.VICTORY, hasFailedCurrentLevel = false)
             onSoundEvent(SoundEffectEvent.LEVEL_UP)
             onHapticEvent(HapticEffectEvent.VICTORY)
             updateState()
@@ -454,7 +466,8 @@ class TetrisEngine(
             clearingLines = clearingLines,
             lineClearTrigger = lineClearTrigger,
             lastClearedCount = lastClearedCount,
-            lastActionMessage = lastActionMessage
+            lastActionMessage = lastActionMessage,
+            hasFailedCurrentLevel = hasFailedCurrentLevel
         )
     }
 

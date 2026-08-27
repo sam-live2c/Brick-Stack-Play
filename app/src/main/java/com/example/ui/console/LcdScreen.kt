@@ -78,6 +78,7 @@ fun LcdScreen(
     onLevelClick: (() -> Unit)? = null,
     onReplayLevel: (() -> Unit)? = null,
     onNextLevel: (() -> Unit)? = null,
+    onReset: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -371,7 +372,8 @@ fun LcdScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(skin.lcdBackground.copy(alpha = 0.92f)),
+                                .background(skin.lcdBackground.copy(alpha = 0.92f))
+                                .clickable { onReset?.invoke() },
                             contentAlignment = Alignment.Center
                         ) {
                             Column(
@@ -407,7 +409,7 @@ fun LcdScreen(
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = "PRESS RESET",
+                                    text = "PRESS RESTART",
                                     color = skin.activePixelColor.copy(alpha = 0.7f),
                                     fontSize = tinyFontSize,
                                     fontFamily = FontFamily.Monospace
@@ -418,7 +420,8 @@ fun LcdScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(skin.lcdBackground.copy(alpha = 0.92f)),
+                                .background(skin.lcdBackground.copy(alpha = 0.92f))
+                                .clickable { onReset?.invoke() },
                             contentAlignment = Alignment.Center
                         ) {
                             Column(
@@ -442,7 +445,7 @@ fun LcdScreen(
                                 )
                                 Spacer(modifier = Modifier.height(6.dp))
                                 Text(
-                                    text = "PRESS RESET",
+                                    text = "PRESS RESTART",
                                     color = skin.activePixelColor.copy(alpha = 0.7f),
                                     fontSize = tinyFontSize,
                                     fontFamily = FontFamily.Monospace
@@ -453,12 +456,13 @@ fun LcdScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(skin.lcdBackground.copy(alpha = 0.85f)),
+                                .background(skin.lcdBackground.copy(alpha = 0.85f))
+                                .clickable { onReset?.invoke() },
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = "PRESS START",
+                                    text = if (gameState.hasFailedCurrentLevel) "PRESS RESTART" else "PRESS START",
                                     color = skin.activePixelColor,
                                     fontSize = overlayFontSize,
                                     fontWeight = FontWeight.Bold,

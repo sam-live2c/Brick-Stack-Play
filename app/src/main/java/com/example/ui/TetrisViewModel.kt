@@ -104,20 +104,22 @@ class TetrisViewModel(application: Application) : AndroidViewModel(application) 
     fun startGame(
         startLevel: Int = _userSettings.value.startLevel,
         gameMode: com.example.game.GameMode = _gameState.value.gameMode,
-        speedMultiplier: Float = _userSettings.value.speedMultiplier
+        speedMultiplier: Float = _userSettings.value.speedMultiplier,
+        resetFailureFlag: Boolean = false
     ) {
         stopTickTimer()
         engine.startGame(
             startLevel = startLevel,
             gameMode = gameMode,
-            speedMultiplier = speedMultiplier
+            speedMultiplier = speedMultiplier,
+            resetFailureFlag = resetFailureFlag
         )
         _gameState.value = engine.state
         startTickTimer()
     }
 
     fun setGameMode(mode: com.example.game.GameMode) {
-        startGame(gameMode = mode)
+        startGame(gameMode = mode, resetFailureFlag = true)
     }
 
     fun selectLevel(targetLevel: Int) {
@@ -126,6 +128,7 @@ class TetrisViewModel(application: Application) : AndroidViewModel(application) 
         val updatedSettings = _userSettings.value.copy(startLevel = validLevel)
         _userSettings.value = updatedSettings
         settingsRepo.saveSettings(updatedSettings)
+        startGame(startLevel = validLevel, resetFailureFlag = true)
         audioSynthesizer.playSound(SoundEffectEvent.BUTTON_CLICK)
         hapticEngine.trigger(HapticEffectEvent.BUTTON_CLICK)
     }
@@ -147,7 +150,7 @@ class TetrisViewModel(application: Application) : AndroidViewModel(application) 
 
     fun replayCurrentLevel() {
         val currentLevel = _gameState.value.level
-        startGame(startLevel = currentLevel)
+        startGame(startLevel = currentLevel, resetFailureFlag = true)
         audioSynthesizer.playSound(SoundEffectEvent.BUTTON_CLICK)
         hapticEngine.trigger(HapticEffectEvent.BUTTON_CLICK)
     }
@@ -164,7 +167,7 @@ class TetrisViewModel(application: Application) : AndroidViewModel(application) 
         val updatedSettings = _userSettings.value.copy(startLevel = nextLvl, maxUnlockedLevel = maxUnlocked)
         _userSettings.value = updatedSettings
         settingsRepo.saveSettings(updatedSettings)
-        startGame(startLevel = nextLvl)
+        startGame(startLevel = nextLvl, resetFailureFlag = true)
         audioSynthesizer.playSound(SoundEffectEvent.BUTTON_CLICK)
         hapticEngine.trigger(HapticEffectEvent.BUTTON_CLICK)
     }

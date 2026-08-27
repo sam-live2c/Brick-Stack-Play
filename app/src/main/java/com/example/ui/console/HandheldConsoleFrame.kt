@@ -122,6 +122,7 @@ fun HandheldConsoleFrame(
                         onLevelClick = onLevelClick,
                         onReplayLevel = onReplayLevel,
                         onNextLevel = onNextLevel,
+                        onReset = onReset,
                         modifier = Modifier.fillMaxSize()
                     )
 
@@ -153,6 +154,7 @@ fun HandheldConsoleFrame(
                     onOpenHighScores = onOpenHighScores,
                     skin = skin,
                     userSettings = userSettings,
+                    hasFailedCurrentLevel = gameState.hasFailedCurrentLevel,
                     modifier = Modifier.fillMaxWidth()
                 )
 
