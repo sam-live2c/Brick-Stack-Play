@@ -53,6 +53,7 @@ class TetrisViewModel(application: Application) : AndroidViewModel(application) 
 
     private var tickJob: Job? = null
     private var secondTimerJob: Job? = null
+    private var levelUpBannerJob: Job? = null
     private var lastSavedScore = 0
 
     init {
@@ -305,7 +306,7 @@ class TetrisViewModel(application: Application) : AndroidViewModel(application) 
     private fun evaluateLevelProgress() {
         val currentLevel = engine.state.level
         val isVictory = engine.state.status == GameStatus.VICTORY
-        var settings = _userSettings.value
+        val settings = _userSettings.value
 
         val newMaxUnlocked = when {
             isVictory && currentLevel >= 1000 -> 1000
@@ -317,6 +318,15 @@ class TetrisViewModel(application: Application) : AndroidViewModel(application) 
             val updatedSettings = settings.copy(maxUnlockedLevel = newMaxUnlocked)
             _userSettings.value = updatedSettings
             settingsRepo.saveSettings(updatedSettings)
+        }
+
+        if (engine.state.isLevelUpBannerVisible && levelUpBannerJob == null) {
+            levelUpBannerJob = viewModelScope.launch {
+                delay(2500L)
+                engine.hideLevelUpBanner()
+                _gameState.value = engine.state
+                levelUpBannerJob = null
+            }
         }
     }
 

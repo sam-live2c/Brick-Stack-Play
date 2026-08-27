@@ -299,11 +299,10 @@ class TetrisEngine(
     }
 
     private fun calculateFinalScore() {
-        val multiplierBonus = (baseScore * speedMultiplier).toInt()
         val lineBonus = linesCleared * 25
         val levelBonus = level * 100
         val modeWinBonus = if (state.status == GameStatus.VICTORY) 1000 else 0
-        finalCalculatedScore = (multiplierBonus + lineBonus + levelBonus + modeWinBonus).coerceAtLeast(0)
+        finalCalculatedScore = (baseScore + lineBonus + levelBonus + modeWinBonus).coerceAtLeast(0)
         if (finalCalculatedScore > highScore) {
             highScore = finalCalculatedScore
         }
@@ -459,17 +458,17 @@ class TetrisEngine(
         )
     }
 
-    // Get drop interval in milliseconds adjusted by user speed multiplier
+    // Get drop interval in milliseconds based on 10 lines cleared logic
     fun getDropIntervalMs(): Long {
-        val lvl = level.coerceIn(1, 1000)
+        val speedStep = (1 + linesCleared / 10).coerceIn(1, 1000)
         val baseMs = when {
-            lvl == 1 -> 800L
-            lvl in 2..10 -> (800L - (lvl - 1) * 70L) // Level 10 is 170ms
-            lvl in 11..50 -> (170L - (lvl - 10) * 2L).coerceAtLeast(70L) // Level 50 is 90ms
-            lvl in 51..100 -> (90L - (lvl - 50) / 2L).coerceAtLeast(65L) // Level 100 is 65ms
-            lvl in 101..500 -> (65L - (lvl - 100) / 20L).coerceAtLeast(45L) // Level 500 is 45ms
-            else -> (45L - (lvl - 500) / 50L).coerceAtLeast(30L) // Level 1000 is 35ms
+            speedStep == 1 -> 800L
+            speedStep in 2..10 -> (800L - (speedStep - 1) * 70L) // Level 10 is 170ms
+            speedStep in 11..50 -> (170L - (speedStep - 10) * 2L).coerceAtLeast(70L) // Level 50 is 90ms
+            speedStep in 51..100 -> (90L - (speedStep - 50) / 2L).coerceAtLeast(65L) // Level 100 is 65ms
+            speedStep in 101..500 -> (65L - (speedStep - 100) / 20L).coerceAtLeast(45L) // Level 500 is 45ms
+            else -> (45L - (speedStep - 500) / 50L).coerceAtLeast(30L) // Level 1000 is 35ms
         }
-        return (baseMs / speedMultiplier.coerceAtLeast(0.1f)).toLong().coerceAtLeast(20L)
+        return baseMs.coerceAtLeast(20L)
     }
 }

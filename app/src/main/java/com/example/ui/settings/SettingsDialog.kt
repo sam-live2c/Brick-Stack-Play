@@ -125,7 +125,7 @@ fun SettingsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp, vertical = 12.dp)
             ) {
-                    // 1. GAME SPEED MULTIPLIER & START LEVEL
+                    // 1. START LEVEL
                     Row(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -137,85 +137,47 @@ fun SettingsScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
-                            text = "GAME SPEED & START LEVEL",
+                            text = "STARTING LEVEL",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
                     Spacer(modifier = Modifier.height(6.dp))
 
-                    val speedOptions = com.example.data.SpeedOption.values()
-                    val currentSpeedOpt = com.example.data.SpeedOption.fromMultiplier(settings.speedMultiplier)
-                    val currentSpeedIdx = speedOptions.indexOf(currentSpeedOpt).coerceAtLeast(0)
+                    val maxUnlocked = settings.maxUnlockedLevel.coerceAtLeast(1)
+                    val currentStartLevelClamped = settings.startLevel.coerceIn(1, maxUnlocked)
 
                     Text(
-                        text = "Falling Speed Multiplier: ${currentSpeedOpt.label} (${currentSpeedOpt.scoreModifierLabel})",
+                        text = "Starting Level: LEVEL $currentStartLevelClamped (Unlocked: 1..$maxUnlocked)",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    Slider(
-                        value = currentSpeedIdx.toFloat(),
-                        onValueChange = {
-                            val idx = it.roundToInt().coerceIn(0, speedOptions.size - 1)
-                            val selectedOpt = speedOptions[idx]
-                            val newS = settings.copy(speedMultiplier = selectedOpt.multiplier)
-                            settings = newS
-                            onSaveSettings(newS)
-                        },
-                        valueRange = 0f..(speedOptions.size - 1).toFloat(),
-                        steps = speedOptions.size - 2,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = "Starting Level: LEVEL ${settings.startLevel}",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Slider(
-                        value = settings.startLevel.toFloat(),
-                        onValueChange = {
-                            val newS = settings.copy(startLevel = it.roundToInt())
-                            settings = newS
-                            onSaveSettings(newS)
-                        },
-                        valueRange = 1f..10f,
-                        steps = 8,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        val presets = listOf(
-                            "EASY" to 1,
-                            "NORMAL" to 3,
-                            "HARD" to 6,
-                            "INSANE" to 9
+                    if (maxUnlocked > 1) {
+                        Slider(
+                            value = currentStartLevelClamped.toFloat(),
+                            onValueChange = {
+                                val selectedLvl = it.roundToInt().coerceIn(1, maxUnlocked)
+                                val newS = settings.copy(startLevel = selectedLvl)
+                                settings = newS
+                                onSaveSettings(newS)
+                            },
+                            valueRange = 1f..maxUnlocked.toFloat(),
+                            steps = if (maxUnlocked > 2) maxUnlocked - 2 else 0,
+                            modifier = Modifier.fillMaxWidth()
                         )
-                        presets.forEach { (label, lvl) ->
-                            val isSelected = settings.startLevel == lvl
-                            OptionCapsule(
-                                text = label,
-                                isSelected = isSelected,
-                                onClick = {
-                                    val newS = settings.copy(startLevel = lvl)
-                                    settings = newS
-                                    onSaveSettings(newS)
-                                },
-                                modifier = Modifier.weight(1f),
-                                height = 32.dp
-                            )
-                        }
                     }
+
+                    Text(
+                        text = if (maxUnlocked == 1) 
+                            "Clear lines in Arcade mode to unlock Level 2 and higher!"
+                        else 
+                            "Select your starting level from any level you have unlocked so far.",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(top = 2.dp, bottom = 6.dp)
+                    )
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 

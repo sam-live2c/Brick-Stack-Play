@@ -137,37 +137,59 @@ fun LcdScreen(
                     if (gameState.isLevelUpBannerVisible && gameState.status == GameStatus.PLAYING) {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(32.dp)
-                                .align(Alignment.TopCenter)
+                                .fillMaxWidth(0.92f)
+                                .align(Alignment.Center)
+                                .clip(RoundedCornerShape(6.dp))
                                 .background(skin.activePixelColor)
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
+                                .border(2.dp, skin.lcdBackground, RoundedCornerShape(6.dp))
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.AutoAwesome,
-                                    contentDescription = null,
-                                    tint = skin.lcdBackground,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.AutoAwesome,
+                                        contentDescription = null,
+                                        tint = skin.lcdBackground,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = "LEVEL UP!",
+                                        color = skin.lcdBackground,
+                                        fontSize = overlayFontSize,
+                                        fontWeight = FontWeight.Black,
+                                        fontFamily = FontFamily.Monospace,
+                                        letterSpacing = 1.sp
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Icon(
+                                        imageVector = Icons.Default.AutoAwesome,
+                                        contentDescription = null,
+                                        tint = skin.lcdBackground,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "LEVEL UP! LVL ${gameState.level}",
+                                    text = "REACHED LEVEL ${gameState.level}",
                                     color = skin.lcdBackground,
                                     fontSize = subFontSize,
-                                    fontWeight = FontWeight.ExtraBold,
+                                    fontWeight = FontWeight.Bold,
                                     fontFamily = FontFamily.Monospace
                                 )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.Default.AutoAwesome,
-                                    contentDescription = null,
-                                    tint = skin.lcdBackground,
-                                    modifier = Modifier.size(14.dp)
+                                Text(
+                                    text = "FALLING SPEED INCREASED!",
+                                    color = skin.lcdBackground.copy(alpha = 0.85f),
+                                    fontSize = tinyFontSize,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = FontFamily.Monospace
                                 )
                             }
                         }
@@ -540,7 +562,7 @@ fun LcdScreen(
                             )
                             StatDisplay(
                                 label = "LINES",
-                                value = "%03d".format(gameState.linesCleared),
+                                value = if (gameState.linesCleared >= 1000) "${gameState.linesCleared}" else "%03d".format(gameState.linesCleared),
                                 skin = skin,
                                 sidebarWidth = sidebarWidth
                             )
