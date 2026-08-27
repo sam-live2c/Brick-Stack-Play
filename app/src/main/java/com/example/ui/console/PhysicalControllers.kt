@@ -129,17 +129,14 @@ fun SystemPillButtonsRow(
                     alpha = if (showSound) 1.0f else 0.25f
                 )
             }
-            val showOption = userSettings?.showSystemOption != false
-            if (onToggleKey != null || showOption) {
-                SystemSmallButton(
-                    label = "SETTINGS",
-                    icon = Icons.Default.Settings,
-                    skin = skin,
-                    buttonWidth = buttonWidth,
-                    onClick = if (onToggleKey != null) { { onToggleKey("showSystemOption") } } else onOpenSettings,
-                    alpha = if (showOption) 1.0f else 0.25f
-                )
-            }
+            SystemSmallButton(
+                label = "SETTINGS",
+                icon = Icons.Default.Settings,
+                skin = skin,
+                buttonWidth = buttonWidth,
+                onClick = onOpenSettings,
+                alpha = 1.0f
+            )
         }
     }
 }

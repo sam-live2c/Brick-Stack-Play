@@ -101,7 +101,6 @@ fun HandheldConsoleFrame(
                 BrandHeader(
                     skin = skin,
                     onOpenHighScores = onOpenHighScores,
-                    onOpenSettings = onOpenSettings,
                     onGoHome = onGoHome,
                     onLevelClick = onLevelClick,
                     multiplayerModeTitle = multiplayerModeTitle
@@ -193,7 +192,6 @@ fun HandheldConsoleFrame(
 private fun BrandHeader(
     skin: ConsoleSkin,
     onOpenHighScores: () -> Unit,
-    onOpenSettings: () -> Unit,
     onGoHome: () -> Unit,
     onLevelClick: (() -> Unit)?,
     multiplayerModeTitle: String?
@@ -225,7 +223,7 @@ private fun BrandHeader(
             )
         }
 
-        // Top Right Corner Buttons (LEVEL, SCORE & SETTINGS)
+        // Top Right Corner Buttons (LEVEL & SCORE)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
@@ -285,24 +283,6 @@ private fun BrandHeader(
                         fontFamily = FontFamily.Monospace
                     )
                 }
-            }
-
-            // Settings Icon Button
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(skin.lcdBackground)
-                    .border(1.5.dp, skin.screenBorderColor, RoundedCornerShape(6.dp))
-                    .clickable(onClick = onOpenSettings)
-                    .padding(horizontal = 7.dp, vertical = 4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
-                    tint = skin.activePixelColor,
-                    modifier = Modifier.size(13.dp)
-                )
             }
         }
     }
