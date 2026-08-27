@@ -79,6 +79,7 @@ fun LcdScreen(
     onReplayLevel: (() -> Unit)? = null,
     onNextLevel: (() -> Unit)? = null,
     onReset: (() -> Unit)? = null,
+    onTogglePause: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -200,16 +201,26 @@ fun LcdScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(skin.lcdBackground.copy(alpha = 0.88f)),
+                                .background(skin.lcdBackground.copy(alpha = 0.88f))
+                                .clickable { onTogglePause?.invoke() },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "PAUSED",
-                                color = skin.activePixelColor,
-                                fontSize = overlayFontSize,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = "PAUSED",
+                                    color = skin.activePixelColor,
+                                    fontSize = overlayFontSize,
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Text(
+                                    text = "TAP TO RESUME",
+                                    color = skin.activePixelColor.copy(alpha = 0.7f),
+                                    fontSize = tinyFontSize,
+                                    fontFamily = FontFamily.Monospace
+                                )
+                            }
                         }
                     } else if (gameState.status == GameStatus.VICTORY) {
                         Box(
@@ -462,7 +473,7 @@ fun LcdScreen(
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = if (gameState.hasFailedCurrentLevel) "PRESS RESTART" else "PRESS START",
+                                    text = if (gameState.isCurrentLevelStarted) "PRESS RESTART" else "PRESS START",
                                     color = skin.activePixelColor,
                                     fontSize = overlayFontSize,
                                     fontWeight = FontWeight.Bold,

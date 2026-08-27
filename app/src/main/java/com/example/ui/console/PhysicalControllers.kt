@@ -86,7 +86,7 @@ fun SystemPillButtonsRow(
     onOpenHighScores: () -> Unit,
     skin: ConsoleSkin,
     userSettings: UserSettings? = null,
-    hasFailedCurrentLevel: Boolean = false,
+    isCurrentLevelStarted: Boolean = false,
     onToggleKey: ((String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
@@ -110,8 +110,8 @@ fun SystemPillButtonsRow(
             }
             val showReset = userSettings?.showSystemReset != false
             if (onToggleKey != null || showReset) {
-                val buttonLabel = if (hasFailedCurrentLevel) "RESTART" else "START"
-                val buttonIcon = if (hasFailedCurrentLevel) Icons.Default.Refresh else Icons.Default.PlayArrow
+                val buttonLabel = if (isCurrentLevelStarted) "RESTART" else "START"
+                val buttonIcon = if (isCurrentLevelStarted) Icons.Default.Refresh else Icons.Default.PlayArrow
                 SystemSmallButton(
                     label = buttonLabel,
                     icon = buttonIcon,

@@ -32,9 +32,42 @@ class TetrisEngine(
     private var lastClearedCount = 0
     private var lastActionMessage: String? = null
     private var hasFailedCurrentLevel = false
+    private var isCurrentLevelStarted = false
 
     fun setHighScore(savedHighScore: Int) {
         highScore = savedHighScore
+        updateState()
+    }
+
+    fun prepareFreshLevel(
+        startLevel: Int = 1,
+        gameMode: GameMode = GameMode.MARATHON,
+        speedMultiplier: Float = 1.0f
+    ) {
+        clearGrid()
+        bag.clear()
+        this.startLevel = startLevel.coerceIn(1, 1000)
+        this.gameMode = gameMode
+        this.speedMultiplier = speedMultiplier
+        level = this.startLevel
+        baseScore = 0
+        finalCalculatedScore = 0
+        linesCleared = 0
+        combo = 0
+        elapsedTimeSeconds = 0
+        timeRemainingSeconds = 120
+        isLevelUpBannerVisible = false
+        lineClearTrigger = 0L
+        clearingLines = emptyList()
+        lastClearedCount = 0
+        lastActionMessage = null
+        holdPieceType = null
+        canHold = true
+        nextPieceType = getRandomPieceFromBag()
+        currentPiece = null
+        hasFailedCurrentLevel = false
+        isCurrentLevelStarted = false
+        state = state.copy(status = GameStatus.IDLE)
         updateState()
     }
 
@@ -69,6 +102,7 @@ class TetrisEngine(
         canHold = true
         nextPieceType = getRandomPieceFromBag()
         spawnNextPiece()
+        isCurrentLevelStarted = true
         state = state.copy(status = GameStatus.PLAYING)
         updateState()
     }
@@ -467,7 +501,8 @@ class TetrisEngine(
             lineClearTrigger = lineClearTrigger,
             lastClearedCount = lastClearedCount,
             lastActionMessage = lastActionMessage,
-            hasFailedCurrentLevel = hasFailedCurrentLevel
+            hasFailedCurrentLevel = hasFailedCurrentLevel,
+            isCurrentLevelStarted = isCurrentLevelStarted
         )
     }
 

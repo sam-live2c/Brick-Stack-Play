@@ -123,6 +123,7 @@ fun HandheldConsoleFrame(
                         onReplayLevel = onReplayLevel,
                         onNextLevel = onNextLevel,
                         onReset = onReset,
+                        onTogglePause = onTogglePause,
                         modifier = Modifier.fillMaxSize()
                     )
 
@@ -154,7 +155,7 @@ fun HandheldConsoleFrame(
                     onOpenHighScores = onOpenHighScores,
                     skin = skin,
                     userSettings = userSettings,
-                    hasFailedCurrentLevel = gameState.hasFailedCurrentLevel,
+                    isCurrentLevelStarted = gameState.isCurrentLevelStarted,
                     modifier = Modifier.fillMaxWidth()
                 )
 
